@@ -42,6 +42,7 @@ const MyForm = ({ onFormSubmit }) => {
       ...form,
       my_file: e.target.files[0],
     });
+    console.log('Selected file:', e.target.files[0]);
   };
 
   const handlePromptChange = (e) => {
