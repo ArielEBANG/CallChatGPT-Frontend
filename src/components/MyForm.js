@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Grid, TextField, Button, TextareaAutosize } from "@mui/material";
+import { Box, Grid, TextField, Button, TextareaAutosize, CircularProgress } from "@mui/material";
 import axios from 'axios';
 
 const MyForm = ({ onFormSubmit }) => {
@@ -29,6 +29,8 @@ const MyForm = ({ onFormSubmit }) => {
     my_file: null,
   });
 
+  const [isLoading, setIsLoading] = useState(false); // Nouvel état pour le chargement
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({
@@ -54,6 +56,7 @@ const MyForm = ({ onFormSubmit }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Début du chargement
 
     // Replace placeholders with actual values
     let filledPrompt = form.prompt;
@@ -79,6 +82,8 @@ const MyForm = ({ onFormSubmit }) => {
       onFormSubmit(response.data);
     } catch (error) {
       console.error("Error submitting the form:", error);
+    } finally {
+      setIsLoading(false); // Fin du chargement
     }
   };
 
@@ -177,8 +182,14 @@ const MyForm = ({ onFormSubmit }) => {
           </Button>
         </Grid>
       </Grid>
+      {isLoading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2 }}>
+          <CircularProgress />
+        </Box>
+      )}
     </Box>
   );
 };
+
 
 export default MyForm;
