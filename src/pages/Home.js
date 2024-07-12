@@ -2,14 +2,12 @@ import React, { useState } from "react";
 import CustomizedAccordions from "../components/Accordion";
 import { Box, Container } from "@mui/material";
 import SwitchButton from "../components/SwitchButton";
-// import Results from './Results';
 import ResultsButton from "../components/ResultsButton";
 
 const Home = ({ formResults }) => {
   const [showText1, setShowText1] = useState(false);
   const [showText2, setShowText2] = useState(false);
-
-  // const formResultsObject = JSON.parse(formResults?.summary);
+  const [error, setError] = useState(null);
 
   const handleSwitchChange = (event) => {
     setShowText1(event.target.checked);
@@ -19,23 +17,43 @@ const Home = ({ formResults }) => {
     setShowText2(event.target.checked);
   };
 
-  // Définissez une variable pour stocker les questions
   let questions = [];
+  let analyseSynthetique = "Pas de donnée disponible";
+  let pointsForts = "Pas de donnée disponible";
+  let pointsFaibles = "Pas de donnée disponible";
 
   if (formResults) {
-    const jsonObject = JSON.parse(formResults.summary);
-    questions = jsonObject.Questions_entretien;
-    console.log(jsonObject);
-    console.log('Analyse_synthetique', jsonObject['Analyse_synthetique']);
+    try {
+      const jsonObject = JSON.parse(formResults.summary);
+      questions = jsonObject.Questions_entretien || [];
+      analyseSynthetique = jsonObject['Analyse_synthetique'] || analyseSynthetique;
+      pointsForts = jsonObject['Points_forts'] || pointsForts;
+      pointsFaibles = jsonObject['Points_faibles'] || pointsFaibles;
+      if (error) setError(null);
+    } catch (err) {
+      if (!error) setError('Pas de donnée valide car ce n\'est pas le format attendu dans le prompt.');
+    }
   }
+
+  // Convertir les objets en chaîne JSON si nécessaire
+  const formatContent = (content) => {
+    if (typeof content === 'object') {
+      return JSON.stringify(content, null, 2);
+    }
+    return content;
+  };
+
   return (
     <Container>
       <h2>Ce qui ressort des scores</h2>
-
+      {error && (
+        <div style={{ color: 'red' }}>
+          <h2>Erreur:</h2>
+          <p>{error}</p>
+        </div>
+      )}
       <CustomizedAccordions
-        content={
-          formResults?(JSON.parse(formResults?.summary)['Analyse_synthetique']):("Pas de donnée disponible")
-        }
+        content={analyseSynthetique}
         formResults={formResults}
       />
       <div>
@@ -51,7 +69,7 @@ const Home = ({ formResults }) => {
         <SwitchButton
           showText={showText1}
           handleSwitchChange={handleSwitchChange}
-          content={formResults?(JSON.parse(formResults?.summary)['Points_forts']):("Pas de donnée disponible")}
+          content={formatContent(pointsForts)}
           label="Points forts"
           formResults={formResults}
         />
@@ -70,28 +88,36 @@ const Home = ({ formResults }) => {
         <SwitchButton
           showText={showText2}
           handleSwitchChange={handleSwitchChange2}
-          content={formResults?(JSON.parse(formResults?.summary)['Points_faibles']):("Pas de donnée disponible")}
+          content={formatContent(pointsFaibles)}
           label="Points d'amélioration"
           formResults={formResults}
         />
       </div>
-      {/* <Results /> */}
       <h1>Ce que je peux demander en entretien</h1>
       <div>
-        {/* Boucle pour afficher chaque question dans un composant ResultsButton */}
-      {Object.keys(questions).map((categorie) => (
-        <div key={categorie}>
-          <h2 style={{ color: "rgb(65, 112, 152)" }}>Suggestions de questions - {categorie}</h2>
-          {questions[categorie].map((question, index) => (
-            <ResultsButton
-              key={`${categorie}-${index}`}
-              title={`Question ${index + 1}`}
-              content={question}
-              formResults={formResults}
-            />
-          ))}
-        </div>
-      ))}
+        {questions && Object.keys(questions).length > 0 ? (
+          Object.keys(questions).map((categorie) => (
+            <div key={categorie}>
+              <h2 style={{ color: "rgb(65, 112, 152)" }}>
+                Suggestions de questions - {categorie}
+              </h2>
+              {Array.isArray(questions[categorie]) ? (
+                questions[categorie].map((question, index) => (
+                  <ResultsButton
+                    key={`${categorie}-${index}`}
+                    title={`Question ${index + 1}`}
+                    content={question}
+                    formResults={formResults}
+                  />
+                ))
+              ) : (
+                <p>Les données de {categorie} ne sont pas valides.</p>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>Pas de questions disponibles.</p>
+        )}
       </div>
     </Container>
   );

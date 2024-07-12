@@ -64,8 +64,6 @@ const MyForm = ({ onFormSubmit }) => {
       filledPrompt = filledPrompt.replace(new RegExp(`\\$\\{${key}\\}`, 'g'), form[key]);
     }
 
-    // console.log('filledPrompt', filledPrompt);
-
     try {
       const formData = new FormData();
       for (const key in form) {
@@ -73,7 +71,7 @@ const MyForm = ({ onFormSubmit }) => {
       }
       formData.append('filledPrompt', filledPrompt); // Add the filled prompt
 
-      const response = await axios.post("https://callchatgpt-backend.onrender.com/api/submit", formData, {
+      const response = await axios.post("http://localhost:8000/api/submit", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -147,10 +145,10 @@ const MyForm = ({ onFormSubmit }) => {
         </Grid>
 
         <Grid item xs={12}>
-          <TextareaAutosize
-            minRows={4}
-            placeholder="Job"
-            style={{ width: "100%" }}
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Job"
             name="job"
             value={form.job}
             onChange={handleChange}
@@ -161,7 +159,7 @@ const MyForm = ({ onFormSubmit }) => {
           <TextareaAutosize
             minRows={4}
             placeholder="Prompt"
-            style={{ width: "100%" }}
+            style={{ width: "100%", fontSize: "16px", padding: "10px" }}
             name="prompt"
             value={form.prompt}
             onChange={handlePromptChange}
@@ -171,25 +169,23 @@ const MyForm = ({ onFormSubmit }) => {
         <Grid item xs={12}>
           <Button variant="contained" component="label">
             Upload File
-            <input type="file" hidden name="my_file" onChange={handleFileChange} />
+            <input
+              type="file"
+              hidden
+              onChange={handleFileChange}
+            />
           </Button>
-          {form.my_file && <p>Document choisi: {form.my_file.name}</p>}
+          {form.my_file && <p>Selected file: {form.my_file.name}</p>}
         </Grid>
 
         <Grid item xs={12}>
-          <Button type="submit" variant="contained" color="primary">
-            Submit
+          <Button type="submit" variant="contained" color="primary" disabled={isLoading}>
+            {isLoading ? <CircularProgress size={24} /> : "Submit"}
           </Button>
         </Grid>
       </Grid>
-      {isLoading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2 }}>
-          <CircularProgress />
-        </Box>
-      )}
     </Box>
   );
 };
-
 
 export default MyForm;
