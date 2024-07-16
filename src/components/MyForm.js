@@ -71,7 +71,7 @@ const MyForm = ({ onFormSubmit }) => {
       }
       formData.append('filledPrompt', filledPrompt); // Add the filled prompt
 
-      const response = await axios.post("http://localhost:8000/api/submit", formData, {
+      const response = await axios.post("https://callchatgpt-backend.onrender.com/api/submit", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

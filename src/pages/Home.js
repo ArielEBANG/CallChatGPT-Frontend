@@ -3,6 +3,8 @@ import CustomizedAccordions from "../components/Accordion";
 import { Box, Container } from "@mui/material";
 import SwitchButton from "../components/SwitchButton";
 import ResultsButton from "../components/ResultsButton";
+// import Navbar from "../components/Navbar";
+import SimpleList from "../components/SimpleList";
 
 const Home = ({ formResults }) => {
   const [showText1, setShowText1] = useState(false);
@@ -119,6 +121,9 @@ const Home = ({ formResults }) => {
           <p>Pas de questions disponibles.</p>
         )}
       </div>
+      <hr />
+      {/* <Navbar /> */}
+      <SimpleList />
     </Container>
   );
 };
