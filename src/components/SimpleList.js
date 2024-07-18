@@ -94,7 +94,7 @@ const SimpleList = () => {
             }}
             href="#further-assistant"
           >
-            Further with assistant
+            Further with assistant(s)
           </Button>
         </ListItem>
       </List>
