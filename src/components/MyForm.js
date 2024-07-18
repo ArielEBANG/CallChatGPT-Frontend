@@ -59,7 +59,7 @@ const MyForm = ({ onFormSubmit }) => {
     setIsLoading(true); // Début du chargement
 
     // Replace placeholders with actual values
-    let filledPrompt = form.prompt;
+    let filledPrompt = `${form.job}, ${form.prompt}`;
     for (const key in form) {
       filledPrompt = filledPrompt.replace(new RegExp(`\\$\\{${key}\\}`, 'g'), form[key]);
     }
